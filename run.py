@@ -10,11 +10,10 @@ from bot import handlers
 
 async def main() -> None:
     dp = Dispatcher()
-    for router in handlers.routers:
-        dp.include_router(router)
+    dp.include_routers(*handlers.routers)
     load_dotenv()
     bot = Bot(getenv('BOT_TOKEN'), parse_mode='HTML')
-    bot.delete_webhook(drop_pending_updates=True)
+    await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
 

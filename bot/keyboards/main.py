@@ -17,3 +17,12 @@ start_keyboard = ReplyKeyboardMarkup(
     resize_keyboard=True,
     input_field_placeholder='Choose currency',
 )
+
+main_menu_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+            KeyboardButton(text='Current major exchange rates'),
+        ],
+    ],
+    resize_keyboard=True
+)

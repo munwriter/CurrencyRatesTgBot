@@ -4,8 +4,8 @@ from aiogram.filters import CommandStart
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
-from bot.misc.textConstants import *
-from bot.states.cfgCurrencies import Currencies
+from bot.misc.literals import *
+from bot.states.main import Currencies
 from bot.keyboards import main as kb
 
 
@@ -47,6 +47,6 @@ async def complete_currencies_cfg(message: Message, state: FSMContext) -> None:
         else:
             await state.update_data(required_currency=message.text)
             await state.clear()
-            await message.answer('<b>Excellent! Basic setup is finished.</b>')
+            await message.answer('<b>Excellent! Basic setup is finished.</b>', reply_markup=kb.main_menu_keyboard)
     else:
         await message.answer('Please enter valid currency!')

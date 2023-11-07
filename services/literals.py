@@ -1,0 +1,2 @@
+LIVE = 'Live list of currencies relative to source currency.\n\n\n<b>Source currency:</b>\n{source}\n\n<b>Required currencies:</b>'
+CONVERT = 'Results of convert:\n\n<b>From:</b> {source_currency}\n<b>To:</b> {required_currency}\n<b>Amount:</b> {amount} {source_currency}\n<b>Result:</b> {result} {required_currency}'

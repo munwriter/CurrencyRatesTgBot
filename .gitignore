@@ -1,3 +1,6 @@
 *.pyc
+*.log
 .env
 /venv
+todo.txt
+notes
