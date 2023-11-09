@@ -5,7 +5,7 @@ from aiogram.filters import Command
 from bot.misc.literals import *
 from bot.misc.constants import *
 from bot.keyboards import main as kb
-from services.main import request_currencies
+from services.webQueries.main import request_currencies
 
 
 commands_router = Router()

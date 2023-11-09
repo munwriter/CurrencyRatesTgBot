@@ -8,7 +8,7 @@ from aiogram.fsm.context import FSMContext
 from bot.misc.literals import *
 from bot.misc.constants import *
 from bot.states.main import Convert
-from services.main import request_currencies
+from services.webQueries.main import request_currencies
 
 
 convert_router = Router()

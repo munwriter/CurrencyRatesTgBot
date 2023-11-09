@@ -1,7 +1,7 @@
 from os import getenv
 from typing import Literal
 
-from services import currencies
+from services.webQueries import currencies
 
 
 async def request_currencies(endpoint: Literal['live', 'convert', 'timeframe', 'historical'], 
