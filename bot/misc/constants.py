@@ -1,7 +1,7 @@
-from typing import Final
+from frozendict import frozendict
 
 
-CURRENCIES: Final[dict] = {
+CURRENCIES = frozendict({
     "AED": "United Arab Emirates Dirham",
     "AFN": "Afghan Afghani",
     "ALL": "Albanian Lek",
@@ -172,7 +172,7 @@ CURRENCIES: Final[dict] = {
     "ZMK": "Zambian Kwacha (pre-2013)",
     "ZMW": "Zambian Kwacha",
     "ZWL": "Zimbabwean Dollar"
-}
+})
 
 CURRENCIES_MESSAGE = """AED - United Arab Emirates Dirham
 AFN - Afghan Afghani

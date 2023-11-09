@@ -6,10 +6,11 @@ class LiveEndpoint(BaseModel):
     quotes: dict[str, Decimal]
     source: str
 
+
 class ConvertEndpointQuery(BaseModel):
     amount: Decimal
     from_: str = Field(..., alias='from')
-    to: str 
+    to: str
 
 
 class ConvertEndpoint(BaseModel):
@@ -19,12 +20,15 @@ class ConvertEndpoint(BaseModel):
 
 class TimeFrameEndpoint(BaseModel):
     ...
-    
+
 
 class HistoricalEndpoint(BaseModel):
     ...
 
-Validators = {
+
+VALIDATORS = {
     'live': LiveEndpoint,
     'convert': ConvertEndpoint,
+    'timeframe': TimeFrameEndpoint,
+    'historical': HistoricalEndpoint
 }

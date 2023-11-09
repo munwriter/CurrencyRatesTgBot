@@ -1,5 +1,4 @@
-import asyncio
-import logging
+from typing import Literal
 
 from httpx import (
     AsyncClient,
@@ -11,7 +10,7 @@ from httpx import (
 from .literals import *
 from .exceptions import ApiException
 from .validationModels import (
-    Validators,
+    VALIDATORS,
     LiveEndpoint,
     ConvertEndpoint,
     TimeFrameEndpoint,
@@ -21,7 +20,7 @@ from .validationModels import (
 
 async def get_currencies(url: str,
                          headers: dict,
-                         endpoint: str,
+                         endpoint: Literal['live', 'convert', 'timeframe', 'historical'],
                          parameters: dict = None,
                          ) -> str:
     """Create get request to server api and validate it.
@@ -44,7 +43,9 @@ async def get_currencies(url: str,
     """
     api_url = url + endpoint
     try:
-        response = await AsyncClient().get(api_url, params=parameters, headers=headers)
+        response = await AsyncClient().get(api_url,
+                                           params=parameters,
+                                           headers=headers)
     except TimeoutException:
         raise TimeoutException('Couldn`t get a response from server.')
     except ProtocolError:
@@ -61,8 +62,11 @@ async def get_currencies(url: str,
     return response.content
 
 
-def parse_quotes(data: str, endpoint: str) -> LiveEndpoint | ConvertEndpoint | TimeFrameEndpoint | HistoricalEndpoint:
-    """Get required validator from pydantic validators, deserialize data using this validator 
+def parse_quotes(data: str,
+                 endpoint: Literal['live', 'convert',
+                                   'timeframe', 'historical']
+                 ) -> LiveEndpoint | ConvertEndpoint | TimeFrameEndpoint | HistoricalEndpoint:
+    """Get required validator from pydantic validators, deserialize data using this validator
     and returns validator object.
 
     Args:
@@ -72,12 +76,14 @@ def parse_quotes(data: str, endpoint: str) -> LiveEndpoint | ConvertEndpoint | T
     Returns:
         LiveEndpoint | ConvertEndpoint | TimeFrameEndpoint | HistoricalEndpoint: Pydantic validator object
     """
-    validator = Validators[endpoint].model_validate_json(data)
+    validator = VALIDATORS[endpoint].model_validate_json(data)
     return validator
 
 
-def format_data(validator: LiveEndpoint | ConvertEndpoint | TimeFrameEndpoint | HistoricalEndpoint, endpoint: str) -> str:
-    """Based on the endpoint, separates the formatting logic, then formats the text to respond to the user.
+def format_data(validator: LiveEndpoint | ConvertEndpoint | TimeFrameEndpoint | HistoricalEndpoint,
+                endpoint: Literal['live', 'convert', 'timeframe', 'historical']
+                ) -> str:
+    """Based on the endpoint, separates the formatting logic, then formats the text to response to the user.
 
     Args:
         validator (LiveEndpoint | ConvertEndpoint | TimeFrameEndpoint | HistoricalEndpoint): Pydantic validator object
@@ -98,12 +104,12 @@ def format_data(validator: LiveEndpoint | ConvertEndpoint | TimeFrameEndpoint | 
                                 amount=validator.query.amount,
                                 result=validator.result)
         return answer
-    
+
     elif endpoint == 'timeframe':
         ...
-    
+
     elif endpoint == 'historical':
         ...
-    
+
     else:
         raise Exception('Invalid endpoint')

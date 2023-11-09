@@ -1,2 +1,15 @@
-LIVE = 'Live list of currencies relative to source currency.\n\n\n<b>Source currency:</b>\n{source}\n\n<b>Required currencies:</b>'
-CONVERT = 'Results of convert:\n\n<b>From:</b> {source_currency}\n<b>To:</b> {required_currency}\n<b>Amount:</b> {amount} {source_currency}\n<b>Result:</b> {result} {required_currency}'
+LIVE = '''Live list of currencies relative to source currency.
+
+
+<b>Source currency:</b>
+{source}
+
+<b>Required currencies:</b>'''
+# ------------------------------------------------------------------------------
+CONVERT = '''Results of convert:
+
+<b>From:</b> {source_currency}
+<b>To:</b> {required_currency}
+<b>Amount:</b> {amount} {source_currency}
+<b>Result:</b> {result} {required_currency}'''
+# ------------------------------------------------------------------------------

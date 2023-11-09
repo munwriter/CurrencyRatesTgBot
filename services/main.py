@@ -1,16 +1,20 @@
-from services import currencies
 from os import getenv
+from typing import Literal
+
+from services import currencies
 
 
-async def request_currencies(endpoint: str, params: dict) -> str:
-    """Entry point to make requests tp api.
+async def request_currencies(endpoint: Literal['live', 'convert', 'timeframe', 'historical'], 
+                             params: dict
+                             ) -> str:
+    """Entry point to make requests to api.
 
     Args:
         endpoint (str): Api endpoint
         params (dict): Request parameters
 
     Returns:
-        str: answer to tg bot
+        str: Answer to tg bot
     """
     url = getenv('API_URL')
     headers = {'apikey': getenv('API_KEY')}
