@@ -7,9 +7,9 @@ from httpx import (
     HTTPError
 )
 
-from .literals import *
-from .exceptions import ApiException
-from .validationModels import (
+from services.webQueries.literals import *
+from services.webQueries.exceptions import ApiException
+from services.webQueries.validationModels import (
     VALIDATORS,
     LiveEndpoint,
     ConvertEndpoint,
@@ -47,19 +47,19 @@ async def get_currencies(url: str,
                                            params=parameters,
                                            headers=headers)
     except TimeoutException:
-        raise TimeoutException('Couldn`t get a response from server.')
+        raise TimeoutException('Could not get a response from server.')
     except ProtocolError:
         raise ProtocolError('Invalid url.')
     except HTTPError:
         raise HTTPError('An error during to connect the server.')
 
     deserialized_response = response.json()
-    if deserialized_response.get('success', 1) == False:
+    if not deserialized_response.get('success', 1):
         raise ApiException(deserialized_response['error']['info'])
     elif 'message' in deserialized_response:
         raise ApiException(deserialized_response['message'])
 
-    return response.content
+    return response.text
 
 
 def parse_quotes(data: str,
@@ -99,10 +99,9 @@ def format_data(validator: LiveEndpoint | ConvertEndpoint | TimeFrameEndpoint | 
         return '\n'.join(answer)
 
     elif endpoint == 'convert':
-        answer = CONVERT.format(source_currency=validator.query.from_,
-                                required_currency=validator.query.to,
-                                amount=validator.query.amount,
-                                result=validator.result)
+        convert_format = CONVERT.format(source_currency=validator.query.from_, required_currency=validator.query.to,
+                                        amount=validator.query.amount, result=validator.result)
+        answer = convert_format
         return answer
 
     elif endpoint == 'timeframe':

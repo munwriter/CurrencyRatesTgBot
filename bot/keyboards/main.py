@@ -5,7 +5,6 @@ from aiogram.types import (
     KeyboardButton
 )
 
-
 start_keyboard = ReplyKeyboardMarkup(
     keyboard=[
         [
