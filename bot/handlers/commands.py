@@ -11,12 +11,12 @@ from services.webQueries.main import request_currencies
 commands_router = Router()
 
 
-@commands_router.message(Command(commands=['live']))
+@commands_router.message(Command('live'))
 async def live_currencies(message: Message) -> None:
     res = await request_currencies('live', {'source': 'RUB', 'currencies': 'USD,EUR,SLL,SYP,PHP'})
     await message.answer(res)
 
 
-@commands_router.message(Command(commands=['list']))
+@commands_router.message(Command('list'))
 async def currencies_list(message: Message) -> None:
     await message.answer(CURRENCIES_MESSAGE)

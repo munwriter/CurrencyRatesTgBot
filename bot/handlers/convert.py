@@ -14,7 +14,7 @@ from services.webQueries.main import request_currencies
 convert_router = Router()
 
 
-@convert_router.message(Command(commands=['convert']))
+@convert_router.message(Command('convert'))
 async def convert_currencies(message: Message, state: FSMContext) -> None:
     await state.set_state(Convert.amount)
     await message.answer('Enter the amount of currency you would like to convert.')
