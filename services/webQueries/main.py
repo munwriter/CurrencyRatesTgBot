@@ -4,9 +4,9 @@ from typing import Literal
 from services.webQueries import currencies
 
 
-async def request_currencies(endpoint: Literal['live', 'convert', 'timeframe', 'historical'], 
-                             params: dict
-                             ) -> str:
+async def request_currencies(
+    endpoint: Literal['live', 'convert', 'timeframe', 'historical'], params: dict
+) -> str | tuple[list, list]:
     """Entry point to make requests to api.
 
     Args:
@@ -18,7 +18,9 @@ async def request_currencies(endpoint: Literal['live', 'convert', 'timeframe', '
     """
     url = getenv('API_URL')
     headers = {'apikey': getenv('API_KEY')}
-    server_response = await currencies.get_currencies(url, headers, endpoint, parameters=params)
+    server_response = await currencies.get_currencies(
+        url, headers, endpoint, parameters=params
+    )
     deserialized_response = currencies.parse_quotes(server_response, endpoint)
     answer = currencies.format_data(deserialized_response, endpoint)
 

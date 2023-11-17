@@ -10,3 +10,10 @@ class Convert(StatesGroup):
     amount = State()
     from_ = State()
     to = State()
+
+
+class TimeFrame(StatesGroup):
+    start_date = State()
+    end_date = State()
+    source_currency = State()
+    required_currency = State()

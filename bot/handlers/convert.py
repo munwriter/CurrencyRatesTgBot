@@ -54,6 +54,7 @@ async def convert_currencies_from(message: Message, state: FSMContext) -> None:
                                                              'amount': response_data['amount'],
                                                              }
                                           )
+        await state.clear()
         await message.answer(result)
     else:
         await message.answer(INVALID_CURRENCY)

@@ -1,35 +1,33 @@
+import logging
 from typing import Literal
 
-from httpx import (
-    AsyncClient,
-    TimeoutException,
-    ProtocolError,
-    HTTPError
-)
+from httpx import AsyncClient, HTTPError, ProtocolError, TimeoutException
+from numpy import transpose
 
-from services.webQueries.literals import *
 from services.webQueries.exceptions import ApiException
+from services.webQueries.literals import *
 from services.webQueries.validationModels import (
     VALIDATORS,
-    LiveEndpoint,
     ConvertEndpoint,
+    HistoricalEndpoint,
+    LiveEndpoint,
     TimeFrameEndpoint,
-    HistoricalEndpoint
 )
 
 
-async def get_currencies(url: str,
-                         headers: dict,
-                         endpoint: Literal['live', 'convert', 'timeframe', 'historical'],
-                         parameters: dict = None,
-                         ) -> str:
+async def get_currencies(
+    url: str,
+    headers: dict,
+    endpoint: Literal['live', 'convert', 'timeframe', 'historical'],
+    parameters: dict = None,
+) -> str:
     """Create get request to server api and validate it.
 
     Args:
         url (str): Api url
         headers (dict): Include secure key for api
         endpoint (str): Api endpoint
-        parameters (dict, optional): Response parameters ex.: {'to': 'USD', 'from': ''RUB}. Defaults to None.
+        parameters (dict, optional): Response parameters ex.: {'to': 'USD', 'from': 'RUB'}. Defaults to None.
 
     Raises:
         TimeoutException: if server don't get answer for a long time
@@ -43,9 +41,9 @@ async def get_currencies(url: str,
     """
     api_url = url + endpoint
     try:
-        response = await AsyncClient().get(api_url,
-                                           params=parameters,
-                                           headers=headers)
+        response = await AsyncClient().get(
+            api_url, params=parameters, headers=headers, timeout=None
+        )
     except TimeoutException:
         raise TimeoutException('Could not get a response from server.')
     except ProtocolError:
@@ -62,10 +60,9 @@ async def get_currencies(url: str,
     return response.text
 
 
-def parse_quotes(data: str,
-                 endpoint: Literal['live', 'convert',
-                                   'timeframe', 'historical']
-                 ) -> LiveEndpoint | ConvertEndpoint | TimeFrameEndpoint | HistoricalEndpoint:
+def parse_quotes(
+    data: str, endpoint: Literal['live', 'convert', 'timeframe', 'historical']
+) -> LiveEndpoint | ConvertEndpoint | TimeFrameEndpoint | HistoricalEndpoint:
     """Get required validator from pydantic validators, deserialize data using this validator
     and returns validator object.
 
@@ -77,13 +74,18 @@ def parse_quotes(data: str,
         LiveEndpoint | ConvertEndpoint | TimeFrameEndpoint | HistoricalEndpoint: Pydantic validator object
     """
     validator = VALIDATORS[endpoint].model_validate_json(data)
+
     return validator
 
 
-def format_data(validator: LiveEndpoint | ConvertEndpoint | TimeFrameEndpoint | HistoricalEndpoint,
-                endpoint: Literal['live', 'convert', 'timeframe', 'historical']
-                ) -> str:
+def format_data(
+    validator: LiveEndpoint | ConvertEndpoint | TimeFrameEndpoint | HistoricalEndpoint,
+    endpoint: Literal['live', 'convert', 'timeframe', 'historical'],
+) -> str | tuple[list, list]:
     """Based on the endpoint, separates the formatting logic, then formats the text to response to the user.
+
+    Raises:
+        Exception: Invalid endpoint
 
     Args:
         validator (LiveEndpoint | ConvertEndpoint | TimeFrameEndpoint | HistoricalEndpoint): Pydantic validator object
@@ -92,20 +94,49 @@ def format_data(validator: LiveEndpoint | ConvertEndpoint | TimeFrameEndpoint | 
     Returns:
         str: Formatted answer for tg bot
     """
+
     if endpoint == 'live':
         answer = [LIVE.format(source=validator.source)]
         for quote in validator.quotes:
             answer.append(f'{quote[3:]} - {validator.quotes[quote]}')
+
         return '\n'.join(answer)
 
     elif endpoint == 'convert':
-        convert_format = CONVERT.format(source_currency=validator.query.from_, required_currency=validator.query.to,
-                                        amount=validator.query.amount, result=validator.result)
-        answer = convert_format
+        answer = CONVERT.format(
+            source_currency=validator.query.from_,
+            required_currency=validator.query.to,
+            amount=validator.query.amount,
+            result=validator.result,
+        )
         return answer
 
     elif endpoint == 'timeframe':
-        ...
+        response = [validator.quotes[i] for i in validator.quotes]
+        currencies = list(response[0].keys())
+        dates_axis = [date for date in validator.quotes]
+        formatted_date_axis =[]
+        shift = len(dates_axis) // 12
+        if not shift: shift = 1
+        for i in range(0, len(dates_axis), shift):
+            formatted_date_axis.append(dates_axis[i])
+        rates_axis = []
+        for i in response:
+            rates_axis.append([i[j] for j in i])
+        rates_axis = list(transpose(rates_axis))
+
+        print(f'{response=}\n{dates_axis}\n{rates_axis=}\n{currencies=}\n{formatted_date_axis=}')
+
+        # response_currencies = next(iter(response.values())).keys()
+        # formatted_currencies = ','.join(list(map(lambda x: x[3:], response_currencies)))
+        # answer = TIMEFRAME.format(
+        #     source_currency=validator.source,
+        #     required_currencies=formatted_currencies,
+        #     start_date=validator.start_date,
+        #     end_date=validator.end_date,
+        # )
+
+        return dates_axis, rates_axis, currencies
 
     elif endpoint == 'historical':
         ...

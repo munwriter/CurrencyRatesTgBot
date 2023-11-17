@@ -1,8 +1,8 @@
-from os import getenv
+import asyncio
 import logging
+from os import getenv
 
 from aiogram import Bot, Dispatcher
-import asyncio
 from dotenv import load_dotenv
 
 from bot import handlers

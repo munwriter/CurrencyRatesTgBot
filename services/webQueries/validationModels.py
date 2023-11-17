@@ -1,5 +1,7 @@
-from pydantic import BaseModel, Field
+from datetime import date
 from decimal import Decimal
+
+from pydantic import BaseModel, Field
 
 
 class LiveEndpoint(BaseModel):
@@ -9,7 +11,7 @@ class LiveEndpoint(BaseModel):
 
 class ConvertEndpointQuery(BaseModel):
     amount: Decimal
-    from_: str = Field(..., alias='from')
+    from_: str = Field(..., alias="from")
     to: str
 
 
@@ -19,7 +21,10 @@ class ConvertEndpoint(BaseModel):
 
 
 class TimeFrameEndpoint(BaseModel):
-    ...
+    start_date: date
+    end_date: date
+    source: str
+    quotes: dict[date, dict[str, Decimal]]
 
 
 class HistoricalEndpoint(BaseModel):
@@ -27,8 +32,8 @@ class HistoricalEndpoint(BaseModel):
 
 
 VALIDATORS = {
-    'live': LiveEndpoint,
-    'convert': ConvertEndpoint,
-    'timeframe': TimeFrameEndpoint,
-    'historical': HistoricalEndpoint
+    "live": LiveEndpoint,
+    "convert": ConvertEndpoint,
+    "timeframe": TimeFrameEndpoint,
+    "historical": HistoricalEndpoint,
 }

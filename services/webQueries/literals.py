@@ -13,3 +13,11 @@ CONVERT = '''Results of convert:
 <b>Amount:</b> {amount} {source_currency}
 <b>Result:</b> {result} {required_currency}'''
 # ------------------------------------------------------------------------------
+TIMEFRAME = '''Timeframe results:
+
+<b>From:</b> {source_currency}
+<b>To:</b> {required_currencies}
+<b>Start date:</b> {start_date}
+<b>End date:</b> {end_date}
+<b>Timeframe:</b>'''
+# ------------------------------------------------------------------------------
