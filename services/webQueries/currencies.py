@@ -4,7 +4,7 @@ from typing import Literal
 from httpx import AsyncClient, HTTPError, ProtocolError, TimeoutException
 from numpy import transpose
 
-from services.webQueries.exceptions import ApiException
+from services.webQueries.exceptions import ApiException, InvalidEndpoint
 from services.webQueries.literals import *
 from services.webQueries.validationModels import (
     VALIDATORS,
@@ -115,9 +115,10 @@ def format_data(
         response = [validator.quotes[i] for i in validator.quotes]
         currencies = list(response[0].keys())
         dates_axis = [date for date in validator.quotes]
-        formatted_date_axis =[]
+        formatted_date_axis = []
         shift = len(dates_axis) // 12
-        if not shift: shift = 1
+        if not shift:
+            shift = 1
         for i in range(0, len(dates_axis), shift):
             formatted_date_axis.append(dates_axis[i])
         rates_axis = []
@@ -125,21 +126,13 @@ def format_data(
             rates_axis.append([i[j] for j in i])
         rates_axis = list(transpose(rates_axis))
 
-        print(f'{response=}\n{dates_axis}\n{rates_axis=}\n{currencies=}\n{formatted_date_axis=}')
-
-        # response_currencies = next(iter(response.values())).keys()
-        # formatted_currencies = ','.join(list(map(lambda x: x[3:], response_currencies)))
-        # answer = TIMEFRAME.format(
-        #     source_currency=validator.source,
-        #     required_currencies=formatted_currencies,
-        #     start_date=validator.start_date,
-        #     end_date=validator.end_date,
-        # )
-
         return dates_axis, rates_axis, currencies
 
     elif endpoint == 'historical':
         ...
 
     else:
-        raise Exception('Invalid endpoint')
+        raise InvalidEndpoint(
+            'Invalid endpoint',
+            'Please enter valid endpoint, its should be "live", "convert", "timeframe"',
+        )
