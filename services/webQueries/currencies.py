@@ -1,4 +1,6 @@
+from decimal import Decimal
 import logging
+from datetime import date
 from typing import Literal
 
 from httpx import AsyncClient, HTTPError, ProtocolError, TimeoutException
@@ -81,7 +83,8 @@ def parse_quotes(
 def format_data(
     validator: LiveEndpoint | ConvertEndpoint | TimeFrameEndpoint | HistoricalEndpoint,
     endpoint: Literal['live', 'convert', 'timeframe', 'historical'],
-) -> str | tuple[list, list]:
+) -> str | tuple[list[date], list[list[Decimal]], list[str]]:
+    
     """Based on the endpoint, separates the formatting logic, then formats the text to response to the user.
 
     Raises:
@@ -93,6 +96,7 @@ def format_data(
 
     Returns:
         str: Formatted answer for tg bot
+        tuple[list[date], list[list[Decimal]], list[str]]: formatted date for graphic plotting
     """
 
     if endpoint == 'live':
@@ -115,15 +119,9 @@ def format_data(
         response = [validator.quotes[i] for i in validator.quotes]
         currencies = list(response[0].keys())
         dates_axis = [date for date in validator.quotes]
-        formatted_date_axis = []
-        shift = len(dates_axis) // 12
-        if not shift:
-            shift = 1
-        for i in range(0, len(dates_axis), shift):
-            formatted_date_axis.append(dates_axis[i])
         rates_axis = []
-        for i in response:
-            rates_axis.append([i[j] for j in i])
+        for date in response:
+            rates_axis.append([date[currency] for currency in date])
         rates_axis = list(transpose(rates_axis))
 
         return dates_axis, rates_axis, currencies

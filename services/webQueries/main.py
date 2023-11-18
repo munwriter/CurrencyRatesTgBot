@@ -1,3 +1,5 @@
+from datetime import date
+from decimal import Decimal
 from os import getenv
 from typing import Literal
 
@@ -6,7 +8,7 @@ from services.webQueries import currencies
 
 async def request_currencies(
     endpoint: Literal['live', 'convert', 'timeframe', 'historical'], params: dict
-) -> str | tuple[list, list]:
+) -> str | tuple[list[date], list[list[Decimal]], list[str]]:
     """Entry point to make requests to api.
 
     Args:
