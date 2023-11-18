@@ -1,15 +1,15 @@
 from decimal import Decimal, InvalidOperation
 
 from aiogram import Router
-from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
+from aiogram.types import Message
 
-from bot.misc.literals import *
 from bot.misc.constants import *
+from bot.misc.literals import *
 from bot.states.main import Convert
+from bot.utils.currencies_validator import validate_currencies
 from services.webQueries.main import request_currencies
-
 
 convert_router = Router()
 
@@ -34,7 +34,7 @@ async def convert_currencies_amount(message: Message, state: FSMContext) -> None
 
 @convert_router.message(Convert.from_)
 async def convert_currencies_from(message: Message, state: FSMContext) -> None:
-    if isinstance(message.text, str) and message.text.upper() in CURRENCIES:
+    if validate_currencies(message.text):
         from_ = message.text.upper()
         await state.update_data(from_=from_)
         await state.set_state(Convert.to)
@@ -45,13 +45,13 @@ async def convert_currencies_from(message: Message, state: FSMContext) -> None:
 
 @convert_router.message(Convert.to)
 async def convert_currencies_from(message: Message, state: FSMContext) -> None:
-    if isinstance(message.text, str) and message.text.upper() in CURRENCIES:
+    if validate_currencies(message.text):
         to = message.text.upper()
         await state.update_data(to=to)
-        response_data = await state.get_data()
-        result = await request_currencies('convert', params={'to': response_data['to'],
-                                                             'from': response_data['from_'],
-                                                             'amount': response_data['amount'],
+        query_data = await state.get_data()
+        result = await request_currencies('convert', params={'to': query_data['to'],
+                                                             'from': query_data['from_'],
+                                                             'amount': query_data['amount'],
                                                              }
                                           )
         await state.clear()

@@ -51,7 +51,7 @@ async def end_date(message: Message, state: FSMContext) -> None:
 @time_frame_router.message(TimeFrame.source_currency)
 async def end_date(message: Message, state: FSMContext) -> None:
     if validate_currencies(message.text, single=True):
-        await state.update_data(source_currency=message.text)
+        await state.update_data(source_currency=message.text.upper())
         await state.set_state(TimeFrame.required_currency)
         await message.answer(
             CURRENCY_MESSAGE.format(option='required', singular_or_plural='ies')
@@ -63,11 +63,11 @@ async def end_date(message: Message, state: FSMContext) -> None:
 @time_frame_router.message(TimeFrame.required_currency)
 async def end_date(message: Message, state: FSMContext) -> None:
     if validate_currencies(message.text):
-        formatted_currencies = ','.join(message.text.split())
+        formatted_currencies = ','.join(message.text.upper().split())
         await state.update_data(required_currency=formatted_currencies)
-        
+
         query_parameters = await state.get_data()
-        query_text = TIMEFRAME_MESSAGE.format(
+        query_data = TIMEFRAME_MESSAGE.format(
             source_currency=query_parameters['source_currency'],
             required_currencies=query_parameters['required_currency'],
             start_date=query_parameters['start_date'],
@@ -83,8 +83,10 @@ async def end_date(message: Message, state: FSMContext) -> None:
             },
         )
         await state.clear()
-        await message.answer(query_text)
-        graphic = Graphic(plt).graphic_pic_to_bytes(response_data[0], response_data[1], response_data[2])
+        await message.answer(query_data)
+        graphic = Graphic(plt).graphic_pic_to_bytes(
+            response_data[0], response_data[1], response_data[2]
+        )
         await message.answer_photo(BufferedInputFile(graphic, "currencies-graphic"))
     else:
         await message.answer(INVALID_CURRENCY)
