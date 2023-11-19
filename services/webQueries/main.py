@@ -17,6 +17,7 @@ async def request_currencies(
 
     Returns:
         str: Answer to tg bot
+        tuple[list[date], list[list[Decimal]], list[str]]: formatted date for graphic plotting
     """
     url = getenv('API_URL')
     headers = {'apikey': getenv('API_KEY')}

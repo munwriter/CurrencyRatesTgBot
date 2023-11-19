@@ -2,6 +2,7 @@ from io import BytesIO
 
 import matplotlib.dates as mdates
 from matplotlib import pyplot as plt
+from typing_extensions import Self
 
 
 class Graphic:
@@ -15,7 +16,7 @@ class Graphic:
         title: str,
         is_legend: bool = True,
         is_tight: bool = True,
-    ) -> None:
+    ) -> Self:
         self.gr.title(title, fontsize=20, pad=20)
         self.gr.xlabel(x_label)
         self.gr.ylabel(y_label)
@@ -26,8 +27,18 @@ class Graphic:
         return self
 
     def draw_graphics(
-        self, x_values: list[list], y_values: list[list], lines: list
-    ) -> None:
+        self, x_values: list, y_values: list[list], lines: list[str]
+    ) -> Self:
+        """Drawing a graphic of the dependence of currencies on dates
+
+        Args:
+            x_values (list): dates as datetime.date object
+            y_values (list[list]): include lists of currencies, one list - values of one currency
+            lines (list[str]): currencies names for legend
+
+        Returns:
+            self: plot graphic
+        """
         self.gr.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
         self.gr.gca().xaxis.set_major_locator(
             mdates.DayLocator(interval=self.__count_shift(len(x_values)))
@@ -44,7 +55,7 @@ class Graphic:
         img.seek(0)
         self.gr.close()
         return img.getvalue()
-
+    
     def __count_shift(self, length: int) -> int:
         if length >= 12:
             return length // 12
