@@ -84,9 +84,9 @@ async def end_date(message: Message, state: FSMContext) -> None:
         )
         await state.clear()
         await message.answer(query_data)
-        graphic = Graphic(plt).graphic_pic_to_bytes(
-            response_data[0], response_data[1], response_data[2]
-        )
+        graphic = Graphic(plt).draw_graphics(response_data[0], response_data[1], response_data[2])
+        graphic.config_graphic('Dates', 'Currencies value', 'Timeframe')
+        graphic = graphic.graphic_pic_to_bytes()
         await message.answer_photo(BufferedInputFile(graphic, "currencies-graphic"))
     else:
         await message.answer(INVALID_CURRENCY)
