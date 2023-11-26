@@ -1,8 +1,10 @@
 .idea
+*.db
 *.pyc
 *.log
 .env
-/venv
+venv
 todo.txt
 notes
 codeLinesCounter.py
+
