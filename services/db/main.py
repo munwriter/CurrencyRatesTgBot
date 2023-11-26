@@ -21,6 +21,9 @@ class DataBase:
             )
             self.db.commit()
 
+    def __format_currencies(self, curr: str) -> str:
+        return ','.join(curr.split())
+
     def get_user_settings(self, id: int) -> Optional[tuple]:
         self.cursor.execute("SELECT * FROM users WHERE id = ?", (id,))
         return self.cursor.fetchone()
@@ -28,6 +31,7 @@ class DataBase:
     def cfg_user_settings(
         self, id: int, rounding_idx: int, source_curr: str, req_curr: str
     ) -> Self:
+        req_curr = self.__format_currencies(req_curr)
         if self.get_user_settings(id):
             self.cursor.execute(
                 "UPDATE users SET rounding_idx = ?, source_currency = ?, required_currencies = ? WHERE id = ?",
