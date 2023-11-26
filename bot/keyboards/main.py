@@ -5,23 +5,9 @@ from aiogram.types import (
     KeyboardButton
 )
 
-start_keyboard = ReplyKeyboardMarkup(
-    keyboard=[
+buttons = buttons = [
         [
-            KeyboardButton(text='USD $'),
-            KeyboardButton(text='EUR €'),
-            KeyboardButton(text='RUB ₽'),
+            InlineKeyboardButton(text="Show available currencies", callback_data="currencies_list"),
         ]
-    ],
-    resize_keyboard=True,
-    input_field_placeholder='Choose currency',
-)
-
-main_menu_keyboard = ReplyKeyboardMarkup(
-    keyboard=[
-        [
-            KeyboardButton(text='Current major exchange rates'),
-        ],
-    ],
-    resize_keyboard=True
-)
+    ]
+currencies_inline_keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
