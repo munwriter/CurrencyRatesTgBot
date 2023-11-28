@@ -15,6 +15,7 @@ from services.webQueries.validationModels import (
     LiveEndpoint,
     TimeFrameEndpoint,
 )
+from services.db.main import DataBase
 
 
 async def get_currencies(
@@ -83,6 +84,7 @@ def parse_quotes(
 def format_data(
     validator: LiveEndpoint | ConvertEndpoint | TimeFrameEndpoint | HistoricalEndpoint,
     endpoint: Literal['live', 'convert', 'timeframe', 'historical'],
+    user_id: int = None
 ) -> str | tuple[list[date], list[list[Decimal]], list[str]]:
     
     """Based on the endpoint, separates the formatting logic, then formats the text to response to the user.
@@ -98,11 +100,13 @@ def format_data(
         str: Formatted answer for tg bot
         tuple[list[date], list[list[Decimal]], list[str]]: formatted date for graphic plotting
     """
-
+    if user_id:
+        rounding_idx = DataBase().get_user_settings(user_id)[1]
     if endpoint == 'live':
         answer = [LIVE.format(source=validator.source)]
         for quote in validator.quotes:
-            answer.append(f'{quote[3:]} - {validator.quotes[quote]}')
+            currency_value = round(validator.quotes[quote], rounding_idx)
+            answer.append(f'{quote[3:]} - {currency_value}')
 
         return '\n'.join(answer)
 
@@ -111,7 +115,7 @@ def format_data(
             source_currency=validator.query.from_,
             required_currency=validator.query.to,
             amount=validator.query.amount,
-            result=validator.result,
+            result=round(validator.result, rounding_idx),
         )
         return answer
 
@@ -123,7 +127,7 @@ def format_data(
         for date in response:
             rates_axis.append([date[currency] for currency in date])
         rates_axis = list(transpose(rates_axis))
-
+        
         return dates_axis, rates_axis, currencies
 
     elif endpoint == 'historical':

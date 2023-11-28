@@ -7,7 +7,9 @@ from services.webQueries import currencies
 
 
 async def request_currencies(
-    endpoint: Literal['live', 'convert', 'timeframe', 'historical'], params: dict
+    endpoint: Literal['live', 'convert', 'timeframe', 'historical'],
+    params: dict,
+    user_id: int = None
 ) -> str | tuple[list[date], list[list[Decimal]], list[str]]:
     """Entry point to make requests to api.
 
@@ -25,6 +27,6 @@ async def request_currencies(
         url, headers, endpoint, parameters=params
     )
     deserialized_response = currencies.parse_quotes(server_response, endpoint)
-    answer = currencies.format_data(deserialized_response, endpoint)
+    answer = currencies.format_data(deserialized_response, endpoint, user_id)
 
     return answer
