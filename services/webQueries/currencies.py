@@ -23,7 +23,7 @@ async def get_currencies(
     headers: dict,
     endpoint: Literal['live', 'convert', 'timeframe', 'historical'],
     parameters: dict = None,
-) -> str:
+) -> tuple:
     """Create get request to server api and validate it.
 
     Args:
@@ -43,24 +43,35 @@ async def get_currencies(
         str: Response in text(string) format
     """
     api_url = url + endpoint
+    status_code = 0
     try:
         response = await AsyncClient().get(
-            api_url, params=parameters, headers=headers, timeout=None
+            api_url, params=parameters, headers=headers, timeout=50
         )
-    except TimeoutException:
-        raise TimeoutException('Could not get a response from server.')
-    except ProtocolError:
-        raise ProtocolError('Invalid url.')
-    except HTTPError:
-        raise HTTPError('An error during to connect the server.')
+    except TimeoutException as e:
+        logging.error(f'ServerTimeoutError{e} - {api_url}{parameters}')
+        status_code = 1
+        response = 'Could not get a response from server. Try again later.'
+    except HTTPError as e:
+        logging.error(f'HTTPError{e} - {response.url}{parameters}')
+        status_code = 1
+        response = 'An error during to connect the server.'
+    else:
+        deserialized_response = response.json()
+        if not deserialized_response.get('success', 1):
+            logging.error(
+                ApiException(deserialized_response['error']['info'], {parameters})
+            )
+            status_code = 1
+            response = 'Something went wrong'
+        elif 'message' in deserialized_response:
+            logging.error(
+                ApiException(deserialized_response['error']['info'], {parameters})
+            )
+            status_code = 1
+            response = 'Something went wrong'
 
-    deserialized_response = response.json()
-    if not deserialized_response.get('success', 1):
-        raise ApiException(deserialized_response['error']['info'])
-    elif 'message' in deserialized_response:
-        raise ApiException(deserialized_response['message'])
-
-    return response.text
+    return status_code, response
 
 
 def parse_quotes(
@@ -84,9 +95,8 @@ def parse_quotes(
 def format_data(
     validator: LiveEndpoint | ConvertEndpoint | TimeFrameEndpoint | HistoricalEndpoint,
     endpoint: Literal['live', 'convert', 'timeframe', 'historical'],
-    user_id: int = None
+    user_id: int = None,
 ) -> str | tuple[list[date], list[list[Decimal]], list[str]]:
-    
     """Based on the endpoint, separates the formatting logic, then formats the text to response to the user.
 
     Raises:
@@ -127,7 +137,7 @@ def format_data(
         for date in response:
             rates_axis.append([date[currency] for currency in date])
         rates_axis = list(transpose(rates_axis))
-        
+
         return dates_axis, rates_axis, currencies
 
     elif endpoint == 'historical':

@@ -49,7 +49,7 @@ async def end_date(message: Message, state: FSMContext) -> None:
 
 
 @time_frame_router.message(TimeFrame.source_currency)
-async def end_date(message: Message, state: FSMContext) -> None:
+async def source_cur(message: Message, state: FSMContext) -> None:
     if validate_currencies(message.text, single=True):
         await state.update_data(source_currency=message.text.upper())
         await state.set_state(TimeFrame.required_currency)
@@ -61,12 +61,12 @@ async def end_date(message: Message, state: FSMContext) -> None:
 
 
 @time_frame_router.message(TimeFrame.required_currency)
-async def end_date(message: Message, state: FSMContext) -> None:
+async def req_cur(message: Message, state: FSMContext) -> None:
     if validate_currencies(message.text):
         formatted_currencies = ','.join(message.text.upper().split())
         await state.update_data(required_currency=formatted_currencies)
-
         query_parameters = await state.get_data()
+        await state.clear()
         query_data = TIMEFRAME_MESSAGE.format(
             source_currency=query_parameters['source_currency'],
             required_currencies=query_parameters['required_currency'],
@@ -82,11 +82,15 @@ async def end_date(message: Message, state: FSMContext) -> None:
                 'source': query_parameters['source_currency'],
             },
         )
-        await state.clear()
-        await message.answer(query_data)
-        graphic = Graphic(plt).draw_graphics(response_data[0], response_data[1], response_data[2])
-        graphic.config_graphic('Dates', 'Currencies value', 'Timeframe')
-        graphic = graphic.graphic_pic_to_bytes()
-        await message.answer_photo(BufferedInputFile(graphic, "currencies-graphic"))
+        if isinstance(response_data, str):
+            await message.answer(response_data)
+        else:
+            await message.answer(query_data)
+            graphic = Graphic(plt).draw_graphics(
+                response_data[0], response_data[1], response_data[2]
+            )
+            graphic.config_graphic('Dates', 'Currencies value', 'Timeframe')
+            graphic = graphic.graphic_pic_to_bytes()
+            await message.answer_photo(BufferedInputFile(graphic, "currencies-graphic"))
     else:
         await message.answer(INVALID_CURRENCY)

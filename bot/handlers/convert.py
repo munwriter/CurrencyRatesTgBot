@@ -50,11 +50,15 @@ async def convert_currencies_from(message: Message, state: FSMContext) -> None:
         await state.update_data(to=to)
         query_data = await state.get_data()
         await state.clear()
-        response_data = await request_currencies('convert', params={'to': query_data['to'],
-                                                             'from': query_data['from_'],
-                                                             'amount': query_data['amount'],
-                                                             }
-                                          )
+        response_data = await request_currencies(
+            'convert',
+            params={
+                'to': query_data['to'],
+                'from': query_data['from_'],
+                'amount': query_data['amount'],
+            },
+            user_id=message.from_user.id,
+        )
 
         await message.answer(response_data)
     else:
