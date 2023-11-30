@@ -19,7 +19,6 @@ async def main() -> None:
 
 if __name__ == '__main__':
     logging.basicConfig(
-        # filename=getenv('SERVICES_LOGS_PATH'),
         format="%(levelname)s [%(asctime)s] - %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
         level=logging.INFO,

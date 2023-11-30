@@ -35,3 +35,11 @@ TIMEFRAME_MESSAGE = '''Timeframe results:
 <b>Start date:</b> {start_date}
 <b>End date:</b> {end_date}
 <b>Timeframe:</b>'''
+# ---------------------------------------------------------------------------------------------
+USER_SETTINGS_MESSAGE = '''Your settings:
+
+<b>Rounding index</b>: {rounding_idx}
+<b>Source currency</b>: {source_cur}
+<b>Required currencies</b>: {req_cur}
+'''
+# ---------------------------------------------------------------------------------------------

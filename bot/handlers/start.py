@@ -10,6 +10,7 @@ from bot.misc.literals import *
 from bot.states.main import Currencies
 from bot.utils.currencies_validator import validate_currencies
 from services.db.main import DataBase
+from bot.keyboards import main as kb
 
 
 start_router = Router()
@@ -58,7 +59,9 @@ async def complete_currencies_cfg(message: Message, state: FSMContext) -> None:
 async def complete_currencies_cfg(message: Message, state: FSMContext) -> None:
     if message.text.isdigit():
         await state.update_data(rounding_idx=int(message.text))
-        await message.answer('<b>Excellent! Basic setup is finished.</b>')
+        await message.answer(
+            '<b>Excellent! Basic setup is finished.</b>', reply_markup=kb.menu_keyboard
+        )
         state_data = await state.get_data()
         await state.clear()
         DataBase().cfg_user_settings(
@@ -66,6 +69,13 @@ async def complete_currencies_cfg(message: Message, state: FSMContext) -> None:
             state_data['rounding_idx'],
             state_data['source_currency'],
             state_data['required_currencies'],
+        )
+        await message.answer(
+            USER_SETTINGS_MESSAGE.format(
+                rounding_idx=state_data['rounding_idx'],
+                source_cur=state_data['source_currency'],
+                req_cur=state_data['required_currencies'],
+            )
         )
     else:
         await message.answer('Please enter valid index!')
