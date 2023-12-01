@@ -3,7 +3,7 @@ import logging
 from datetime import date
 from typing import Literal
 
-from httpx import AsyncClient, HTTPError, ProtocolError, TimeoutException
+from httpx import AsyncClient, HTTPError, TimeoutException
 from numpy import transpose
 
 from services.webQueries.exceptions import ApiException, InvalidEndpoint
@@ -29,18 +29,11 @@ async def get_currencies(
     Args:
         url (str): Api url
         headers (dict): Include secure key for api
-        endpoint (str): Api endpoint
-        parameters (dict, optional): Response parameters ex.: {'to': 'USD', 'from': 'RUB'}. Defaults to None.
-
-    Raises:
-        TimeoutException: if server don't get answer for a long time
-        ProtocolError: Incorrect api ur
-        HTTPError: Any error during to connect to the server
-        ApiException: False success status
-        ApiException: Any message from server
+        endpoint (Literal[live, convert, timeframe, historical]): Api endpoint
+        parameters (dict, optional): response parameters ex.: {'to': 'USD', 'from': 'RUB'}. Defaults to None.
 
     Returns:
-        str: Response in text(string) format
+        tuple: status code + response(response can be changed if it any exception)
     """
     api_url = url + endpoint
     status_code = 0
@@ -53,7 +46,7 @@ async def get_currencies(
         status_code = 1
         response = 'Could not get a response from server. Try again later.'
     except HTTPError as e:
-        logging.error(f'HTTPError{e} - {response.url}{parameters}')
+        logging.error(f'HTTPError{e} - {parameters}')
         status_code = 1
         response = 'An error during to connect the server.'
     else:
@@ -99,16 +92,16 @@ def format_data(
 ) -> str | tuple[list[date], list[list[Decimal]], list[str]]:
     """Based on the endpoint, separates the formatting logic, then formats the text to response to the user.
 
-    Raises:
-        Exception: Invalid endpoint
-
     Args:
         validator (LiveEndpoint | ConvertEndpoint | TimeFrameEndpoint | HistoricalEndpoint): Pydantic validator object
-        endpoint (str): Api endpoint
+        endpoint (Literal[live, convert, timeframe, historical]): Api endpoint
+        user_id (int, optional): User id to get rounding idx. Defaults to None.
+
+    Raises:
+        InvalidEndpoint: ...
 
     Returns:
-        str: Formatted answer for tg bot
-        tuple[list[date], list[list[Decimal]], list[str]]: formatted date for graphic plotting
+        str | tuple[list[date], list[list[Decimal]], list[str]]: Formatted answer for tg bot | formatted data for graphic plotting
     """
     if user_id:
         rounding_idx = DataBase().get_user_settings(user_id)[1]

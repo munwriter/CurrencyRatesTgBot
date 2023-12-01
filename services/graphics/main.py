@@ -32,7 +32,7 @@ class Graphic:
         """Drawing a graphic of the dependence of currencies on dates
 
         Args:
-            x_values (list): dates as datetime.date object
+            x_values (list): dates as datetime. Date object
             y_values (list[list]): include lists of currencies, one list - values of one currency
             lines (list[str]): currencies names for legend
 
@@ -41,7 +41,7 @@ class Graphic:
         """
         self.gr.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
         self.gr.gca().xaxis.set_major_locator(
-            mdates.DayLocator(interval=self.__count_shift(len(x_values)))
+            mdates.DayLocator(interval=Graphic.__count_shift(len(x_values)))
         )
         for i in range(len(lines)):
             self.gr.plot(x_values, y_values[i], label=lines[i])
@@ -55,8 +55,9 @@ class Graphic:
         img.seek(0)
         self.gr.close()
         return img.getvalue()
-    
-    def __count_shift(self, length: int) -> int:
+
+    @staticmethod
+    def __count_shift(length: int) -> int:
         if length >= 12:
             return length // 12
         return 1

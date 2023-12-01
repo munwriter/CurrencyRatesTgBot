@@ -2,7 +2,7 @@ from datetime import datetime
 
 
 def validate_date(date: str) -> bool:
-    """Checking the date format and lessness on now date
+    """Checking the date format and lawlessness on now date
 
     Args:
         date (str): date
@@ -22,7 +22,7 @@ def validate_date(date: str) -> bool:
 
 
 def validate_dates_range(start_date: str, end_date: str) -> bool:
-    """Checking delta of dates it should be less then one year
+    """Checking delta of dates it should be less than one year
 
     Args:
         start_date (str):
