@@ -1,21 +1,21 @@
-from decimal import Decimal
 import logging
 from datetime import date
+from decimal import Decimal
 from typing import Literal
 
 from httpx import AsyncClient, HTTPError, TimeoutException
 from numpy import transpose
 
+from services.db.main import DataBase
 from services.webQueries.exceptions import ApiException, InvalidEndpoint
 from services.webQueries.literals import *
-from services.webQueries.validationModels import (
+from services.webQueries.schemas import (
     VALIDATORS,
     ConvertEndpoint,
     HistoricalEndpoint,
     LiveEndpoint,
     TimeFrameEndpoint,
 )
-from services.db.main import DataBase
 
 
 async def get_currencies(
@@ -37,31 +37,35 @@ async def get_currencies(
     """
     api_url = url + endpoint
     status_code = 0
+    response = None
+
+    def handle_exception(error: Exception):
+        nonlocal status_code, response
+        logging.error(f'{error.__class__.__name__}{error} - {parameters}')
+        status_code = 1
+        response = 'An error occurred.'
+
     try:
         response = await AsyncClient().get(
             api_url, params=parameters, headers=headers, timeout=50
         )
     except TimeoutException as e:
-        logging.error(f'ServerTimeoutError{e} - {api_url}{parameters}')
-        status_code = 1
+        handle_exception(e)
         response = 'Could not get a response from server. Try again later.'
     except HTTPError as e:
-        logging.error(f'HTTPError{e} - {parameters}')
-        status_code = 1
+        handle_exception(e)
         response = 'An error during to connect the server.'
     else:
         deserialized_response = response.json()
         if not deserialized_response.get('success', 1):
-            logging.error(
-                ApiException(deserialized_response['error']['info'], {parameters})
+            handle_exception(
+                ApiException(deserialized_response['error']['info'], f'{parameters}')
             )
-            status_code = 1
             response = 'Something went wrong'
         elif 'message' in deserialized_response:
-            logging.error(
-                ApiException(deserialized_response['error']['info'], {parameters})
+            handle_exception(
+                ApiException(deserialized_response['error']['info'], f'{parameters}')
             )
-            status_code = 1
             response = 'Something went wrong'
 
     return status_code, response
