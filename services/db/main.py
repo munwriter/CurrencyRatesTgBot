@@ -19,7 +19,7 @@ class DataBase:
             )
             self.db.commit()
 
-    @staticmethod
+    
     def __format_currencies(curr: str) -> str:
         return ','.join(curr.split())
 
@@ -31,17 +31,9 @@ class DataBase:
         self, id: int, rounding_idx: int, source_curr: str, req_curr: str
     ) -> None:
         req_curr = DataBase.__format_currencies(req_curr)
-        if self.get_user_settings(id):
-            self.cursor.execute(
-                "UPDATE users SET rounding_idx = ?, source_currency = ?, required_currencies = ? WHERE id = ?",
-                (rounding_idx, source_curr, req_curr, id),
-            )
-
-        else:
-            self.cursor.execute(
-                "INSERT INTO users VALUES (?,?,?,?)",
-                (id, rounding_idx, source_curr, req_curr),
-            )
+        params = (id, rounding_idx, source_curr, req_curr)
+        query = "INSERT OR REPLACE INTO users (id, rounding_idx, source_currency, required_currencies) VALUES (?,?,?,?)"
+        self.cursor.execute(query, params)
         self.db.commit()
 
     def close_connection(self) -> None:
