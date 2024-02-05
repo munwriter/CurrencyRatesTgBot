@@ -24,7 +24,7 @@ async def get_currencies(
     endpoint: Literal['live', 'convert', 'timeframe', 'historical'],
     parameters: dict = None,
 ) -> tuple:
-    """Create get request to server api and validate it.
+    """Create get request to server api and checking for errors.
 
     Args:
         url (str): Api url
