@@ -9,7 +9,7 @@ from services.webQueries import currencies
 async def request_currencies(
     endpoint: Literal['live', 'convert', 'timeframe', 'historical'],
     params: dict,
-    user_id: int = None,
+    user_id: int | None = None,
 ) -> str | tuple[list[date], list[list[Decimal]], list[str]]:
     """Entry point to make requests to api.
 

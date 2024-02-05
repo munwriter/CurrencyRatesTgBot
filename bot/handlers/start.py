@@ -26,7 +26,7 @@ async def start(message: Message, state: FSMContext) -> None:
 
 
 @start_router.message(Currencies.source_currency)
-async def complete_currencies_cfg(message: Message, state: FSMContext) -> None:
+async def set_current_currency(message: Message, state: FSMContext) -> None:
     """Validate user message(correct format and content) and set next
     state in positive case.
     """
@@ -41,7 +41,7 @@ async def complete_currencies_cfg(message: Message, state: FSMContext) -> None:
 
 
 @start_router.message(Currencies.required_currencies)
-async def complete_currencies_cfg(message: Message, state: FSMContext) -> None:
+async def set_required_currency(message: Message, state: FSMContext) -> None:
     """Validate user message(correct format and content) and if all good
     checks the message for the eq with {source_currency_stage}.
     """

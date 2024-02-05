@@ -4,8 +4,8 @@ from aiogram.types import Message
 
 from bot.misc.constants import *
 from bot.misc.literals import *
-from services.webQueries.main import request_currencies
 from services.db.main import DataBase
+from services.webQueries.main import request_currencies
 
 commands_router = Router()
 

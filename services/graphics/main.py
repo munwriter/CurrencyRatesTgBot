@@ -57,7 +57,7 @@ class Graphic:
         self.gr.close()
         return img.getvalue()
 
-
+    @staticmethod
     def __count_shift(length: int) -> int:
         if length >= 12:
             return length // 12

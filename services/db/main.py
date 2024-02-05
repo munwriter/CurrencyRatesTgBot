@@ -19,7 +19,7 @@ class DataBase:
             )
             self.db.commit()
 
-    
+    @staticmethod
     def __format_currencies(curr: str) -> str:
         return ','.join(curr.split())
 

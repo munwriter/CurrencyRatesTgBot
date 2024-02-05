@@ -22,7 +22,7 @@ async def get_currencies(
     url: str,
     headers: dict,
     endpoint: Literal['live', 'convert', 'timeframe', 'historical'],
-    parameters: dict = None,
+    parameters: dict[str, str] = None,
 ) -> tuple:
     """Create get request to server api and checking for errors.
 
@@ -92,7 +92,7 @@ def parse_quotes(
 def format_data(
     validator: LiveEndpoint | ConvertEndpoint | TimeFrameEndpoint | HistoricalEndpoint,
     endpoint: Literal['live', 'convert', 'timeframe', 'historical'],
-    user_id: int = None,
+    user_id: int | None = None,
 ) -> str | tuple[list[date], list[list[Decimal]], list[str]]:
     """Based on the endpoint, separates the formatting logic, then formats the text to response to the user.
 
