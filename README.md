@@ -10,6 +10,7 @@ The repository is a telegram bot for tracking the exchange rate. The user can ch
 - **Httpx**
 - **Numpy**
 - **Matplotlib**
+- **Sqllite3**
 
 ## Features
 
