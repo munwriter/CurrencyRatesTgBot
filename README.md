@@ -12,6 +12,9 @@ The repository is a telegram bot for tracking the exchange rate. The user can ch
 - **Matplotlib**
 - **Sqllite3**
 
+## Api
+[Api layer - Currencies](https://apilayer.com/marketplace/currency_data-api)
+
 ## Features
 
 ### Basic setup - configurate user settings
