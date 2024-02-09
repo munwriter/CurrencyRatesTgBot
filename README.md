@@ -1,4 +1,9 @@
 # Currency Rates Telegram Bot
+![GitHub last commit](https://img.shields.io/github/last-commit/munwriter/CurrencyRatesTgBot?style=for-the-badge)
+![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/munwriter/currencyratestgbot?style=for-the-badge)
+![Static Badge](https://img.shields.io/badge/aiogram-v3-blue?style=for-the-badge&logo=telegram)
+![Static Badge](https://img.shields.io/badge/matplotlib-blue?style=for-the-badge&logo=matplotlib)
+![Static Badge](https://img.shields.io/badge/httpx-red?style=for-the-badge)
 
 ## Overview
 
@@ -48,6 +53,19 @@ You can choose src currency and required currencies from list of available curre
 <p> 
   <img width="400" src="https://github.com/munwriter/CurrencyRatesTgBot/blob/main/.github/graphic.jpg">
 </p>
+
+### Convert
+
+<p> 
+  <img width="400" src="https://github.com/munwriter/CurrencyRatesTgBot/blob/main/.github/Untitled%205.png">
+</p>
+
+### Live
+
+<p> 
+  <img width="400" src="https://github.com/munwriter/CurrencyRatesTgBot/blob/main/.github/Untitled%206.png">
+</p>
+
 
 ## Instalation and usage
 
